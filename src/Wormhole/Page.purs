@@ -4,12 +4,8 @@ module Wormhole.Page
 
 , Namespace, makeNamespace, runNamespace
 , Slug, makeSlug, runSlug
-
-, locate
-, Locator
 ) where
 
-import Data.Maybe (Maybe(Nothing), maybe)
 import Prelude
 import Test.QuickCheck.Arbitrary (class Arbitrary, arbitrary)
 
@@ -37,11 +33,3 @@ derive instance ordSlug :: Ord Slug
 instance arbitrarySlug :: Arbitrary Slug where arbitrary = makeSlug <$> arbitrary
 
 foreign import slugify :: String -> String
-
-locate :: forall namespace slug f page
-        . (Applicative f)
-       => (namespace -> Maybe (slug -> f (Maybe page)))
-       -> namespace -> slug -> f (Maybe page)
-locate ll ns s = maybe (pure Nothing) (_ $ s) (ll ns)
-
-type Locator f = Slug -> f (Maybe Page)
