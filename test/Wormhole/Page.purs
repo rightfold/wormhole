@@ -32,10 +32,15 @@ testLocate = do
   quickCheck $ noSuitableLocator
   quickCheck $ suitableLocatorNoPage
   quickCheck $ suitableLocatorPage
-  where noSuitableLocator n s = isNothing (runPure (locate (const Nothing) n s))
+  where noSuitableLocator :: Namespace -> Slug -> Boolean
+        noSuitableLocator n s = isNothing (runPure (locate (const Nothing) n s))
+
+        suitableLocatorNoPage :: Namespace -> Slug -> Boolean
         suitableLocatorNoPage n s = isNothing (runPure (locate ll n s))
           where ll n' | n' == n   = Just (const (pure Nothing))
                       | otherwise = Nothing
+
+        suitableLocatorPage :: Namespace -> Slug -> Boolean
         suitableLocatorPage n s = isJust (runPure (locate ll n s))
           where ll n' | n' == n   = Just l
                       | otherwise = Nothing

@@ -9,7 +9,6 @@ module Wormhole.Page
 , Locator
 ) where
 
-import Control.Monad.Eff (Eff)
 import Data.Maybe (Maybe(Nothing), maybe)
 import Prelude
 import Test.QuickCheck.Arbitrary (class Arbitrary, arbitrary)
@@ -39,7 +38,10 @@ instance arbitrarySlug :: Arbitrary Slug where arbitrary = makeSlug <$> arbitrar
 
 foreign import slugify :: String -> String
 
-locate :: forall eff. (Namespace -> Maybe (Locator eff)) -> Namespace -> Locator eff
+locate :: forall namespace slug f page
+        . (Applicative f)
+       => (namespace -> Maybe (slug -> f (Maybe page)))
+       -> namespace -> slug -> f (Maybe page)
 locate ll ns s = maybe (pure Nothing) (_ $ s) (ll ns)
 
-type Locator eff = Slug -> Eff eff (Maybe Page)
+type Locator f = Slug -> f (Maybe Page)
