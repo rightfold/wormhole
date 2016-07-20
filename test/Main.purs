@@ -1,7 +1,6 @@
 module Test.Main where
 
 import Prelude
-import Control.Monad.Eff (Eff)
+import Test.Wormhole.Page as Wormhole.Page
 
-main :: forall eff. Eff eff Unit
-main = pure unit
+main = Wormhole.Page.test
