@@ -2,11 +2,12 @@ module Wormhole.Page.Location
 ( locate
 ) where
 
-import Data.Maybe (Maybe(Nothing), maybe)
+import Control.Plus (empty, class Plus)
+import Data.Maybe (Maybe, maybe)
 import Prelude
 
-locate :: forall namespace slug f page
-        . (Applicative f)
-       => (namespace -> Maybe (slug -> f (Maybe page)))
-       -> namespace -> slug -> f (Maybe page)
-locate ll ns s = maybe (pure Nothing) (_ $ s) (ll ns)
+locate :: forall namespace slug f m page
+        . (Applicative f, Plus m)
+       => (namespace -> Maybe (slug -> f (m page)))
+       -> namespace -> slug -> f (m page)
+locate ll ns s = maybe (pure empty) (_ $ s) (ll ns)
