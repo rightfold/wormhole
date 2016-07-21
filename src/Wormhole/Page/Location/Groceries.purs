@@ -4,10 +4,13 @@ module Wormhole.Page.Location.Groceries
 
 import Control.Monad.Eff.Exception (Error)
 import Control.Monad.Iff (Iff)
+import Data.Array as Array
 import Data.Either (Either(..))
+import Data.Foldable (sum)
 import Data.Int as Int
 import Data.Maybe (Maybe(..), maybe)
 import Data.String as String
+import Partial.Unsafe (unsafeCrashWith)
 import Prelude
 import Wormhole.Page (Body(HTML), Page, runSlug, Slug)
 
@@ -34,7 +37,18 @@ parse = String.split "\n" >>> map (String.split "\t") >>> (_ >>= parseRecord)
 
 compute :: Array {from :: String, to :: String, amount :: Int}
         -> Array {from :: String, to :: String, amount :: Int}
-compute = id
+compute = map sortFromTo >>> group >>> map fold >>> map unsortFromTo
+  where sortFromTo {from, to, amount}
+          | from < to = {from: from, to: to,   amount:        amount}
+          | otherwise = {from: to,   to: from, amount: negate amount}
+        unsortFromTo {from, to, amount}
+          | amount > 0 = {from: from, to: to,   amount:        amount}
+          | otherwise  = {from: to,   to: from, amount: negate amount}
+        group =     Array.sortBy (\a b -> compare a.from b.from <> compare a.to b.to)
+                >>> Array.groupBy (\a b -> a.from == b.from && a.to == b.to)
+        fold xs = case Array.head xs of
+                    Just {from, to} -> xs # map _.amount # sum # {from, to, amount: _}
+                    Nothing -> unsafeCrashWith "groupBy returns empty element"
 
 render :: Array {from :: String, to :: String, amount :: Int} -> Body
 render _ = HTML ""

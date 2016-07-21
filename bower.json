@@ -9,9 +9,10 @@
     "purescript-either": "^1.0.0",
     "purescript-exceptions": "^1.0.0",
     "purescript-strings": "^1.0.0",
-    "purescript-integers": "^1.0.0"
+    "purescript-integers": "^1.0.0",
+    "purescript-foldable-traversable": "^1.0.0",
+    "purescript-arrays": "^1.0.0",
+    "purescript-partial": "^1.1.2"
   },
-  "devDependencies": {
-    "purescript-foldable-traversable": "^1.0.0"
-  }
+  "devDependencies": {}
 }
